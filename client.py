@@ -21,6 +21,7 @@ class Client:
 
         # exchange public keys
 
+
         # receive the encrypted secret key
 
         message_handler = threading.Thread(target=self.read_handler,args=())
@@ -34,7 +35,7 @@ class Client:
 
             # decrypt message with the secrete key
 
-            # ... 
+            # ...
 
 
             print(message)

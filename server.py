@@ -1,5 +1,6 @@
 import socket
 import threading
+import rsa
 
 class Server:
 
@@ -15,6 +16,7 @@ class Server:
         self.s.listen(100)
 
         # generate keys ...
+        public_key, private_key = rsa.rsa_algo()
 
         while True:
             c, addr = self.s.accept()
@@ -24,7 +26,7 @@ class Server:
             self.username_lookup[c] = username
             self.clients.append(c)
 
-            # send public key to the client 
+            # send public key to the client
 
             # ...
 
@@ -32,7 +34,7 @@ class Server:
 
             # ...
 
-            # send the encrypted secret to a client 
+            # send the encrypted secret to a client
 
             # ...
 
@@ -47,7 +49,7 @@ class Server:
 
             client.send(msg.encode())
 
-    def handle_client(self, c: socket, addr): 
+    def handle_client(self, c: socket, addr):
         while True:
             msg = c.recv(1024)
 

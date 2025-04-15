@@ -1,6 +1,6 @@
-import secrets,random
+import secrets, random
 
-def _gcd(a, b):
+def gcd(a, b):
     '''
     calculates the gcd of two ints
     '''
@@ -8,15 +8,14 @@ def _gcd(a, b):
         a, b = b, a % b
     return a
 
-def _egcd(a, b):
+def egcd(a, b):
     '''
     calculates the modular inverse from e and phi
     '''
     if a == 0:
         return (b, 0, 1)
-    else:
-        g, y, x = _egcd(b % a, a)
-        return (g, x - (b // a) * y, y)
+    g, y, x = egcd(b % a, a)
+    return (g, x - (b // a) * y, y)
 
 def rsa_algo():
     """RSA"""
@@ -25,16 +24,28 @@ def rsa_algo():
     n = num_1*num_2
 
     phi = (num_1-1)*(num_2-1)
-    e = random.randint(1, phi)
-    g = _gcd(e,phi)
-    while g != 1:
-        e = random.randint(1, phi)
-        g = _gcd(e, phi)
+    e = random.randint(2, phi-1)
+    while gcd(e, phi) != 1:
+        e = random.randint(2, phi-1)
 
-    d = _egcd(e, phi)[1]
-
-    d = d % phi
+    d = egcd(e, phi)[1] % phi
     if d < 0:
         d += phi
 
-    return ((e,n), (d,n))
+    return (e,n), (d,n)
+
+def encrypt(message, public_key):
+    """
+    c = (m^e) mod n
+    """
+    key, n = public_key
+    encrypted_blocks = [pow(ord(char), key, n) for char in message]
+    return encrypted_blocks
+
+def decrypt(encrypted_blocks, private_key):
+    """
+    m = (c^d) mod n
+    """
+    key, n = private_key
+    decrypted_chars = [chr(pow(block, key, n)) for block in encrypted_blocks]
+    return "".join(decrypted_chars)

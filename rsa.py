@@ -19,8 +19,8 @@ def egcd(a, b):
 
 def rsa_algo():
     """RSA"""
-    # треба змінити
-    num_1, num_2 = 1,2
+    # треба чекати чи просте число
+    num_1, num_2 = secrets.randbits(1024), secrets.randbits(1024)
     n = num_1*num_2
 
     phi = (num_1-1)*(num_2-1)

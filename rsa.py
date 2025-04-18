@@ -32,6 +32,7 @@ def egcd(a, b):
     return (a, last_x, last_y)
 
 def is_prime(n, k=5):
+    """check if num is prime"""
     if n < 2:
         return False
     if n in (2, 3):

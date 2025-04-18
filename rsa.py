@@ -1,4 +1,11 @@
-import secrets, random
+"""RSA implementation for secure chat application.
+
+This module provides RSA encryption, decryption, and digital signature functions.
+"""
+import secrets
+import random
+import hashlib
+
 
 def gcd(a, b):
     '''
@@ -12,10 +19,17 @@ def egcd(a, b):
     '''
     calculates the modular inverse from e and phi
     '''
-    if a == 0:
-        return (b, 0, 1)
-    g, y, x = egcd(b % a, a)
-    return (g, x - (b // a) * y, y)
+    # iterative implementation of extended Euclidean algorithm
+    x, y = 0, 1
+    last_x, last_y = 1, 0
+
+    while b != 0:
+        quot = a // b
+        a, b = b, a % b
+        x, last_x = last_x - quot * x, x
+        y, last_y = last_y - quot * y, y
+
+    return (a, last_x, last_y)
 
 def is_prime(n, k=5):
     if n < 2:
@@ -81,3 +95,44 @@ def decrypt(encrypted_blocks, private_key):
     key, n = private_key
     decrypted_chars = [chr(pow(block, key, n)) for block in encrypted_blocks]
     return "".join(decrypted_chars)
+
+
+def sign(message, private_key):
+    """Create a digital signature for a message.
+    
+    Args:
+        message: Message to sign
+        private_key: RSA private key tuple (d, n)
+        
+    Returns:
+        Digital signature for the message
+    """
+    key, n = private_key
+    # use the hash of the message for signing
+    message_hash = int(hashlib.sha256(message.encode()).hexdigest(), 16)
+
+    # sign the hash with private key
+    return pow(message_hash, key, n)
+
+
+def verify(message, signature, public_key):
+    """Verify a digital signature.
+    
+    Args:
+        message: Original message
+        signature: Digital signature to verify
+        public_key: RSA public key tuple (e, n)
+        
+    Returns:
+        Boolean indicating if signature is valid
+    """
+    key, n = public_key
+
+    # decrypt the signature with public key
+    decrypted_hash = pow(signature, key, n)
+
+    # calculate the hash of the original message
+    actual_hash = int(hashlib.sha256(message.encode()).hexdigest(), 16)
+
+    # verify they match
+    return decrypted_hash == actual_hash
